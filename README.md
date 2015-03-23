@@ -1,5 +1,5 @@
 # injectionproxy.js
-A simple node.js proxy capable of injecting code into HTML transmissions
+A simple HTTP proxy written in node.js, capable of injecting code into HTML transmissions
 
 ## Installation
 To install the required modules run the following command:
@@ -11,7 +11,7 @@ npm install colors dateformat iconv mootools
 ## What it does
 __injectionproxy.js__ is a simple multithreaded HTTP proxy. It will automatically decode all server replies with content-type html/text and status code 200. If it finds a configurable pattern it will inject a payload either before or after the pattern. It can handle gzip and inflate/deflate compressed transmissions.
 
-I did this quick hack to demonstrate how easy control over a mobile phone can be gained by injecting the [beef](http://beefproject.com/) hook.js into the html the phone is downloading through a rogue access point running this proxy.
+I did this quick hack to demonstrate how easy control over a mobile phone can be gained by injecting the [beef](http://beefproject.com/) hook.js into the HTML code the phone is downloading through a rogue access point running this proxy.
 
 
 ## Configuring the proxy
