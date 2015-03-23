@@ -9,7 +9,7 @@ npm install colors dateformat iconv mootools
 ```
 
 ## What it does
-__injectionproxy.js__ is a simple multithreaded HTTP proxy. It will automatically decode all transmissions with content-type html and inject a configurable payload either before or after a search pattern. It can handle gzip and inflate/deflate compressed content.
+__injectionproxy.js__ is a simple multithreaded HTTP proxy. It will automatically decode all server replies with content-type html/text and status code 200. If it finds a configurable patteern it will inject a payload either before or after the pattern. It can handle gzip and inflate/deflate compressed content.
 
 I did this quick hack to demonstrate how easy control over a mobile phone can be gained by injecting the [beef](http://beefproject.com/) hook.js into the html the phone is downloading through a rogue access point running this proxy.
 
