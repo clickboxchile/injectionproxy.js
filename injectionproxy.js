@@ -8,9 +8,10 @@
  * Licensed under MIT License
  * 
  */
+
+// require everything we need and initialize an iconv converter
 require("mootools");
 require("colors");
-
 var Iconv  = require('iconv').Iconv,
     format = require("util").format,
     EventEmitter = require('events').EventEmitter,
@@ -20,11 +21,13 @@ var Iconv  = require('iconv').Iconv,
 	numCPUs = require('os').cpus().length,
 	http = require('http'),
 	ISOtoUTF = new Iconv('ISO-8859-1', 'UTF-8');
-		
-String.prototype.splice = function( idx, rem, s ) {
-    return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
+
+// this extension to the string type will insert a value at a specific index
+String.prototype.splice = function( index, value ) {
+    return (this.slice(0,index) + value + this.slice(index));
 };
 
+// InjectionProxy Main class
 var InjectionProxy = new Class({
 	Extends: EventEmitter,
 	settingsFile : "settings",
@@ -40,6 +43,8 @@ var InjectionProxy = new Class({
 				return self.settings[key];
 	},
 	initialize : function() {
+		// the constructor of the class will take care of launching the proxy
+		
 		var self = this;
 		
 		// import settings (settingsFile can be overwritten via second commandline parameter. 
@@ -47,7 +52,8 @@ var InjectionProxy = new Class({
 		if (process.argv.length === 3) self.settingsFile = process.argv[2];
 		self.settings = require("./" + self.settingsFile);
 
-		// react on asynchronously on printing event
+		// react asynchronously on printing event. Output may show up in wrong order but 
+		// performance is more important than the beauty of a console log
 		self.on("print", function(text) {
 			var now = new Date();
 			var formatedDate = dateFormat(now, self.getSetting("timeFormat"));
@@ -80,6 +86,8 @@ var InjectionProxy = new Class({
 		});
 	},
 	worker : function() {
+		// Worker logic
+		
 		var self = this;
 		var debug = self.getSetting("debug");
 		var injectionLocation = self.getSetting("injectionLocation");
@@ -88,7 +96,6 @@ var InjectionProxy = new Class({
 		var offset = injectBefore ? 0 : injectionLocation.length;
 		var preventCaching = self.getSetting("preventCaching");
 		
-		// Worker logic
 		http.createServer(function(client_request, client_response) {
 		
 			// Assemble options for proxy -> target request
@@ -139,7 +146,8 @@ var InjectionProxy = new Class({
 				var buffered_chunks = []
 				var totalLength = 0;
 
-				// responses not relevant for rejection can be sent directly
+				// The header of responses not relevant for injection can 
+				// be sent back to the client directly
 				if (!relevantForInjection()) {
 					client_response.writeHead(proxy_response.statusCode, proxy_response.headers);
 				}
@@ -205,7 +213,7 @@ var InjectionProxy = new Class({
 							if (injectionLocationPosition > -1){
 								
 								// injection can proceed. replace buffered_request with payloded html
-								var payloadedHtml = html.splice(injectionLocationPosition + offset, 0, payload);
+								var payloadedHtml = html.splice(injectionLocationPosition + offset, payload);
 								buffered_request = new Buffer(payloadedHtml, 'binary');								
 								
 								// since we changed the content, add payload length to content-length
@@ -229,6 +237,8 @@ var InjectionProxy = new Class({
 						}
 						
 					} else {
+						// no buffered chunks -> the data event has already streamed 
+						// everything to the client directly. Just close the connection.
 						client_response.end();
 						if (debug && caller != "undefined") {
 							self.print(("(" + cluster.worker.id + ") ").grey.bold + caller.yellow + (" <<< " + host + " " + client_request.url).cyan);
@@ -261,5 +271,5 @@ var InjectionProxy = new Class({
 	}
 });
 		
-// Main routine: launch the proxy
+// Main routine: create an instance of the proxy to launch it
 var app = new InjectionProxy();
