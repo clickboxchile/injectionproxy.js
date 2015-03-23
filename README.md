@@ -1,4 +1,4 @@
-# InjectionProxy.js
+# injectionproxy.js
 A simple node.js proxy capable of injecting code into HTML transmissions
 
 ## Installation
