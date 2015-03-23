@@ -4,21 +4,10 @@
  * This simple multi threaded HTTP proxy injects code after a configurable 
  * pattern in http requests with content type text/html. 
  *
- * The follwing IPtables rule will... 
- * - redirct http traffic on wlan0 to the local proxy server
- * - redirect calls to port 3000 to the local beef hook
- * - pass thru all other traffic
+ * Copyright (c) 2015 Timo Becker, contributors.
+ * Licensed under MIT License
  * 
- * iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
- * iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 3000 -j DNAT --to-destination 127.0.0.1:3000
- * iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:3128
- * iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
- *
- * To allow rooting from external interfaces to the loopback device issue this comamnd:
- * sysctl -w net.ipv4.conf.wlan0.route_localnet=1 
- *
  */
-
 require("mootools");
 require("colors");
 
